@@ -1,0 +1,67 @@
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\FileWachter.exe.config
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.csproj.AssemblyReference.cache
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.Form1.resources
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.Properties.Resources.resources
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.csproj.GenerateResource.cache
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.csproj.CoreCompileInputs.cache
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.csproj.CopyComplete
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\FileWachter\FileWachter\bin\Debug\FileWachter.exe.config
+C:\Users\acer7\Desktop\FileWachter\FileWachter\bin\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\FileWachter\FileWachter\bin\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.csproj.AssemblyReference.cache
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.Form1.resources
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.Properties.Resources.resources
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.csproj.GenerateResource.cache
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.csproj.CoreCompileInputs.cache
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.csproj.CopyComplete
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\FileWachter\FileWachter\obj\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\FileWachter\bin\Debug\FileWachter.exe.config
+C:\Users\acer7\Desktop\FileWachter\bin\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\FileWachter\bin\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.csproj.AssemblyReference.cache
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.Form1.resources
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.Properties.Resources.resources
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.csproj.GenerateResource.cache
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.csproj.CoreCompileInputs.cache
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.csproj.CopyComplete
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\FileWachter\obj\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\c# projects\FileWachter\bin\Debug\FileWachter.exe.config
+C:\Users\acer7\Desktop\c# projects\FileWachter\bin\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\c# projects\FileWachter\bin\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.csproj.AssemblyReference.cache
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.Form1.resources
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.Properties.Resources.resources
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.csproj.GenerateResource.cache
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.csproj.CoreCompileInputs.cache
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.csproj.CopyComplete
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\c# projects\FileWachter\obj\Debug\FileWachter.pdb
+C:\Users\Mr\Desktop\FileWachter\bin\Debug\FileWachter.exe.config
+C:\Users\Mr\Desktop\FileWachter\bin\Debug\FileWachter.exe
+C:\Users\Mr\Desktop\FileWachter\bin\Debug\FileWachter.pdb
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.csproj.AssemblyReference.cache
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.csproj.SuggestedBindingRedirects.cache
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.Form1.resources
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.Properties.Resources.resources
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.csproj.GenerateResource.cache
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.csproj.CoreCompileInputs.cache
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.csproj.CopyComplete
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.exe
+C:\Users\Mr\Desktop\FileWachter\obj\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\bin\Debug\FileWachter.exe.config
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\bin\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\bin\Debug\FileWachter.pdb
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.csproj.AssemblyReference.cache
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.Form1.resources
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.Properties.Resources.resources
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.csproj.GenerateResource.cache
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.csproj.CoreCompileInputs.cache
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.csproj.CopyComplete
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.exe
+C:\Users\acer7\Desktop\FileWatcher\FileWachter\obj\Debug\FileWachter.pdb
