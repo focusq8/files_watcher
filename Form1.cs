@@ -8,98 +8,103 @@ namespace FileWatcher
 {
     public partial class Form1 : Form
     {
-        //read all Extensions from file Setting.ini
-        private readonly string read_file_extension = Application.StartupPath + "\\Setting.ini";
-        private readonly string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        private readonly int MAXMIUM_TITLE_LENGTH = 16;
+        private readonly string settingsFilePath = Path.Combine(Application.StartupPath, "Setting.ini");
+        private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        private const int MaxTitleLength = 16;
         public Form1()
         {
             InitializeComponent();
         }
-        private void read_file()
+        private void ReadSettingsFile()
         {
             try
             {
-                if (File.Exists(read_file_extension))
-                    listBox2.Items.AddRange(File.ReadAllLines(read_file_extension));
+                if (File.Exists(settingsFilePath))
+                    listBox2.Items.AddRange(File.ReadAllLines(settingsFilePath));
                 else
-                    File.CreateText("Setting.ini");
+                    // Create the file if it does not exist
+                    File.CreateText(settingsFilePath).Dispose();
             }
-
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Can not create file","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show($"Cannot create or read the settings file. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void extension_file()
+        private void SaveExtensionsToFile()
         {
-            // use using to close StreamWriter when finished
-            using (StreamWriter streamWriter = new StreamWriter("Setting.ini"))
-                try
+            // Use the 'using' statement to ensure the StreamWriter is properly disposed of
+            try
+            {
+                // Initialize the StreamWriter within a using block to ensure proper disposal
+                using (var streamWriter = new StreamWriter("Setting.ini"))
                 {
-                    foreach (object add_extension in listBox2.Items)
-                    {                        
-                        streamWriter.WriteLine(add_extension.ToString());
+                    // Write each extension to the file
+                    foreach (var extension in listBox2.Items.Cast<string>())
+                    {
+                        streamWriter.WriteLine(extension);
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-                }
+            }
+            catch (Exception ex)
+            {
+                // Show an error message if something goes wrong
+                MessageBox.Show($"Failed to save extensions: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-        private void choose_filter()
-        // upload all Extensions from file Setting.ini in listBox2
+        private void ApplyFilter()
         {
             if (listBox2.Items.Count > 0)
             {
-                string extensions = string.Empty;
-                foreach (object Item in listBox2.Items)
-                    extensions += Item + ";";
-                string add_filter = extensions.Remove(extensions.Length - 1);
-                fileSystemWatcherEx1.Filter = add_filter;
+                var extensions = string.Join(";", listBox2.Items.Cast<string>());
+                fileSystemWatcherEx1.Filter = extensions;
             }
             else
-                MessageBox.Show("Setting.ini is empty Please Add Extensions ! ","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            {
+                MessageBox.Show("Setting.ini is empty. Please add extensions.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            read_file();
-            choose_filter();
+            ReadSettingsFile();
+            ApplyFilter();
         }
         private void fileSystemWatcherEx1_OnDeleted(object sender, FileSystemEventArgs e)
         {
-            listBox1.Items.Add($"Deleted:    *{e.FullPath}\n");
+            string action = e.ChangeType.ToString();
+            listBox1.Items.Add($"{action}: *{e.FullPath}");
+
             Show();
             WindowState = FormWindowState.Normal;
             Activate();
         }
         private void fileSystemWatcherEx1_OnRenamed(object sender,RenamedEventArgs e)
         {
-            listBox1.Items.Add($"Renamed:    *{e.FullPath}\n");
+            string action = e.ChangeType.ToString();
+            listBox1.Items.Add($"{action}: *{e.FullPath}");
+
             Show();
             WindowState = FormWindowState.Normal;
             Activate();
         }
         private void fileSystemWatcherEx1_OnCreated(object sender, FileSystemEventArgs e)
         {
-            listBox1.Items.Add($"Created:    *{e.FullPath}\n");
+            string action = e.ChangeType.ToString();
+            listBox1.Items.Add($"{action}: *{e.FullPath}");
+
             Show();
             WindowState = FormWindowState.Normal;
             Activate();
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            // random alphabet            
-            var stringChars = string.Empty;
             var random = new Random();
-            int length = random.Next(1, MAXMIUM_TITLE_LENGTH);
-            for (int i = 0; i < length; i++)
-                stringChars += chars[random.Next(chars.Length)];
-            Text = stringChars;
+            var randomString = new string(Enumerable.Range(0, random.Next(1, MaxTitleLength))
+                .Select(_ => Chars[random.Next(Chars.Length)]).ToArray());
+            Text = randomString;
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked == true)
+            if (checkBox1.Checked)
                 timer1.Start();
             else
                 timer1.Stop();
@@ -107,176 +112,221 @@ namespace FileWatcher
         }
         private void All_Extenions_CheckedChanged(object sender, EventArgs e)
         {
-            // choose All Extenions 
-            if (checkBox2.Checked == true)
-
-                fileSystemWatcherEx1.Filter = "*.*";
-
-            else if (checkBox2.Checked == false)
-                choose_filter();
+            fileSystemWatcherEx1.Filter = checkBox2.Checked ? "*.*" : string.Empty;
+            if (!checkBox2.Checked)
+                ApplyFilter();
         }
         private void choosePathToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog folder_browser = new FolderBrowserDialog();
-            string selectedFolder = @"C:\";
-            folder_browser.SelectedPath = selectedFolder;
-            if (folder_browser.ShowDialog() == DialogResult.OK)
+            using (var folderBrowser = new FolderBrowserDialog())
             {
-                textBox1.Text = folder_browser.SelectedPath;
-                fileSystemWatcherEx1.Path = textBox1.Text;
+                folderBrowser.SelectedPath = @"C:\";
+                if (folderBrowser.ShowDialog() == DialogResult.OK)
+                {
+                    textBox1.Text = folderBrowser.SelectedPath;
+                    fileSystemWatcherEx1.Path = textBox1.Text;
+                }
             }
         }
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Programmed using C# By BoSalem Alazmi\n\n\n\nThank you (Qassam Sniper , Maged Khoja)",
-                string.Empty,
+                "About",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
+            if (listBox1.Items.Count > 0)
             {
-                if (listBox1.Items.Count > 0)
-                {
-                    listBox1.Items.Clear();
-                }
-                else
-                    MessageBox.Show("Can Not Clear, ListBox Is Empty");
+                listBox1.Items.Clear();
             }
-            catch (Exception error)
+            else
             {
-                MessageBox.Show(error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Cannot clear, ListBox is empty.");
             }
         }
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(textBox2.Text) || string.IsNullOrEmpty(textBox2.Text))
-                MessageBox.Show("Please Add Extension","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-            else
+            var extension = textBox2.Text.Trim();
+            if (string.IsNullOrEmpty(extension))
             {
-                string text = textBox2.Text;
-                string text2 = "*." + text;
-                listBox2.Items.Add(text2);
-                textBox2.Clear();
-
+                MessageBox.Show("Please add an extension.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            extension_file();
+            listBox2.Items.Add("*." + extension);
+            textBox2.Clear();
+            SaveExtensionsToFile();
         }
-
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                object remove_file = listBox2.SelectedItem;
-                listBox2.Items.Remove(remove_file);
-                extension_file();
+                if (listBox2.SelectedItem != null)
+                {
+                    listBox2.Items.Remove(listBox2.SelectedItem);
+                    SaveExtensionsToFile();
+                }
+                else
+                {
+                    MessageBox.Show("Select an extension to remove.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-
-            catch (Exception error)
+            catch (Exception ex)
             {
-                MessageBox.Show(error.Message,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to remove extension. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }      
+        }
         private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                if (string.IsNullOrEmpty(listBox1.Text))
-                    MessageBox.Show("please select the Folder To open it", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                else
+                var selectedItem = listBox1.SelectedItem as string;
+                if (string.IsNullOrEmpty(selectedItem))
                 {
-                    string choose_folder = listBox1.SelectedItem.ToString();
-                    string path = choose_folder.Split('*')[1];
-                    Path.GetInvalidPathChars().ToList().ForEach(c => path = path.Replace(c.ToString(), ""));
-                    string directoryPathOnly = Path.GetDirectoryName(path);
-                    Process.Start(directoryPathOnly);
-                }               
+                    MessageBox.Show("Please select a folder to open.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                var path = selectedItem.Split('*')[1].Trim();
+                var directoryPath = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(directoryPath))
+                {
+                    Process.Start(directoryPath);
+                }
             }
-            catch (Exception error)
+            catch (Exception ex)
             {
-                MessageBox.Show(error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to open folder. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                if (string.IsNullOrEmpty(listBox1.Text))
-                    MessageBox.Show("please select the File To open it", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                else
+                var selectedItem = listBox1.SelectedItem as string;
+                if (string.IsNullOrEmpty(selectedItem))
                 {
-                    string choose_folder = listBox1.SelectedItem.ToString();
-                    string path = choose_folder.Split('*')[1];
-                    Process.Start("explorer", path);
-                }                
+                    MessageBox.Show("Please select a file to open.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                var path = selectedItem.Split('*')[1].Trim();
+                Process.Start("explorer", path);
             }
-            catch (Exception error)
+            catch (Exception ex)
             {
-                MessageBox.Show(error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to open file. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void deleteFileToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             try
             {
-                // delete file
-                if (string.IsNullOrEmpty(listBox1.Text))
-                    MessageBox.Show("please select the file to delete it", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                else
+                var selectedItem = listBox1.SelectedItem as string;
+                if (string.IsNullOrEmpty(selectedItem))
                 {
-                    string choose_folder = listBox1.SelectedItem.ToString();
-                    string path = choose_folder.Split('*')[1];
-                    File.Delete(path);
+                    MessageBox.Show("Please select a file to delete.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                var path = selectedItem.Split('*')[1].Trim();
+                // Check if file is in use
+                if (IsFileLocked(path))
+                {
+                    MessageBox.Show("The file is currently in use by another process and cannot be deleted. Please close the file and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                // Delete the file
+                File.Delete(path);
+                MessageBox.Show("File deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to delete file. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private bool IsFileLocked(string filePath)
+        {
+            FileStream stream = null;
+            try
+            {
+                // Attempt to open the file with exclusive access
+                stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                // The file is locked
+                return true;
+            }
+            finally
+            {
+                // Close the file stream if it was successfully opened
+                if (stream != null)
+                {
+                    stream.Close();
                 }
             }
-            catch (Exception error)
-
-            {
-                
-                MessageBox.Show(error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            return false;
         }
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (listBox1.Items.Count == 0)
+            {
+                MessageBox.Show("Cannot save, ListBox is empty.");
+                return;
+            }
             try
             {
-                if (listBox1.Items.Count > 0)
+                using (var saveTxt = new SaveFileDialog())
                 {
-                    SaveFileDialog save_txt = new SaveFileDialog();
-                    save_txt.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                    save_txt.Filter = "TEXT (*.txt)|*.txt";
-                    save_txt.ShowDialog();
-                    using (StreamWriter writer = new StreamWriter(save_txt.FileName))
-                        foreach (object saver in listBox1.Items)
-                        {    
-                            writer.Write(saver.ToString());
-                        }                  
-                    MessageBox.Show("Done saved It", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    saveTxt.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    saveTxt.Filter = "Text Files (*.txt)|*.txt";
+                    if (saveTxt.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllLines(saveTxt.FileName, listBox1.Items.Cast<string>());
+                        MessageBox.Show("File saved successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
-                else
-                    MessageBox.Show("Can Not Save, ListBox Is Empty");
             }
-            catch (Exception error)
+            catch (Exception ex)
             {
-                MessageBox.Show(error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Failed to save file. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void copyPathToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
-                string choose_folder = listBox1.SelectedItem.ToString();
-                string path = choose_folder.Split('*')[1];
-                Path.GetInvalidPathChars().ToList().ForEach(c => path = path.Replace(c.ToString(), ""));
-                string directoryPathOnly = Path.GetDirectoryName(path);
-                Clipboard.SetText(directoryPathOnly);
-                MessageBox.Show("Copied!",string.Empty,MessageBoxButtons.OK,MessageBoxIcon.Information);
-            }            
-            catch (Exception error)
+                // Get the selected item as a string
+                var selectedItem = listBox1.SelectedItem as string;
+                if (string.IsNullOrEmpty(selectedItem))
+                {
+                    // Notify user if no item is selected
+                    MessageBox.Show("Please select a file to copy.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                // Extract the full path from the selected item
+                var path = selectedItem.Split('*')[1].Trim();
+                // Check if the file exists
+                if (File.Exists(path))
+                {
+                    // Copy the full path (including file name) to the clipboard
+                    Clipboard.SetText(path);
+                    MessageBox.Show("File path copied to clipboard.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else if (Directory.Exists(path))
+                {
+                    // Handle the case where the path itself is a directory
+                    Clipboard.SetText(path);
+                    MessageBox.Show("Directory path copied to clipboard.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("The selected path does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show(error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Handle any unexpected exceptions
+                MessageBox.Show($"Failed to copy path. {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void StartToolStripMenuItem_Click(object sender, EventArgs e)
@@ -315,7 +365,6 @@ namespace FileWatcher
                 MessageBox.Show(error.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void Form1_Move(object sender, EventArgs e)
         {
             if (WindowState == FormWindowState.Minimized)
