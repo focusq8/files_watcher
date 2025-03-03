@@ -85,7 +85,7 @@ namespace FileWatcher
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(58, 79);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(446, 225);
+            this.listBox1.Size = new System.Drawing.Size(446, 303);
             this.listBox1.TabIndex = 0;
             // 
             // listBox2
@@ -95,7 +95,7 @@ namespace FileWatcher
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(5, 118);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(47, 186);
+            this.listBox2.Size = new System.Drawing.Size(47, 264);
             this.listBox2.TabIndex = 2;
             // 
             // textBox1
@@ -319,7 +319,7 @@ namespace FileWatcher
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
-            this.ClientSize = new System.Drawing.Size(511, 310);
+            this.ClientSize = new System.Drawing.Size(511, 400);
             this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);

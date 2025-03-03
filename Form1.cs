@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace FileWatcher
 {
@@ -22,7 +23,7 @@ namespace FileWatcher
                 if (File.Exists(settingsFilePath))
                     listBox2.Items.AddRange(File.ReadAllLines(settingsFilePath));
                 else
-                    // Create the file if it does not exist
+                    // Create the file if does not exist
                     File.CreateText(settingsFilePath).Dispose();
             }
             catch (Exception ex)
@@ -70,8 +71,7 @@ namespace FileWatcher
         }
         private void fileSystemWatcherEx1_OnDeleted(object sender, FileSystemEventArgs e)
         {
-            string action = e.ChangeType.ToString();
-            listBox1.Items.Add($"{action}: *{e.FullPath}");
+            LogEvent("Deleted", e.FullPath);
 
             Show();
             WindowState = FormWindowState.Normal;
@@ -79,8 +79,7 @@ namespace FileWatcher
         }
         private void fileSystemWatcherEx1_OnRenamed(object sender,RenamedEventArgs e)
         {
-            string action = e.ChangeType.ToString();
-            listBox1.Items.Add($"{action}: *{e.FullPath}");
+            LogEvent("Renamed", e.FullPath);
 
             Show();
             WindowState = FormWindowState.Normal;
@@ -88,13 +87,22 @@ namespace FileWatcher
         }
         private void fileSystemWatcherEx1_OnCreated(object sender, FileSystemEventArgs e)
         {
-            string action = e.ChangeType.ToString();
-            listBox1.Items.Add($"{action}: *{e.FullPath}");
+            LogEvent("Created", e.FullPath);
 
             Show();
             WindowState = FormWindowState.Normal;
             Activate();
         }
+
+        private void fileSystemWatcherEx1_OnChanged(object sender, FileSystemEventArgs e)
+        {
+            LogEvent("Changed", e.FullPath);
+
+            Show();
+            WindowState = FormWindowState.Normal;
+            Activate();
+        }
+      
         private void timer1_Tick(object sender, EventArgs e)
         {
             var random = new Random();
@@ -187,10 +195,13 @@ namespace FileWatcher
                     MessageBox.Show("Please select a folder to open.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                var path = selectedItem.Split('*')[1].Trim();
-                var directoryPath = Path.GetDirectoryName(path);
-                if (!string.IsNullOrEmpty(directoryPath))
+                string pattern = @":\s*(.*?)\s*<>";
+                Match match = Regex.Match(selectedItem, pattern);
+
+                if (match.Success)
                 {
+                    var path = match.Groups[1].Value.Trim();
+                    var directoryPath = Path.GetDirectoryName(path);
                     Process.Start(directoryPath);
                 }
             }
@@ -209,8 +220,14 @@ namespace FileWatcher
                     MessageBox.Show("Please select a file to open.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                var path = selectedItem.Split('*')[1].Trim();
-                Process.Start("explorer", path);
+                string pattern = @":\s*(.*?)\s*<>";
+                Match match = Regex.Match(selectedItem, pattern);
+
+                if (match.Success)
+                {
+                    var path = match.Groups[1].Value.Trim();
+                    Process.Start("explorer", path);
+                }
             }
             catch (Exception ex)
             {
@@ -227,16 +244,23 @@ namespace FileWatcher
                     MessageBox.Show("Please select a file to delete.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                var path = selectedItem.Split('*')[1].Trim();
-                // Check if file is in use
-                if (IsFileLocked(path))
+
+                string pattern = @":\s*(.*?)\s*<>";
+                Match match = Regex.Match(selectedItem, pattern);
+
+                if (match.Success)
                 {
-                    MessageBox.Show("The file is currently in use by another process and cannot be deleted. Please close the file and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    var path = match.Groups[1].Value.Trim();
+                    // Check if file is in use
+                    if (IsFileLocked(path))
+                    {
+                        MessageBox.Show("The file is currently in use by another process and cannot be deleted. Please close the file and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    // Delete the file
+                    File.Delete(path);
+                    MessageBox.Show("File deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                // Delete the file
-                File.Delete(path);
-                MessageBox.Show("File deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -304,23 +328,29 @@ namespace FileWatcher
                     return;
                 }
                 // Extract the full path from the selected item
-                var path = selectedItem.Split('*')[1].Trim();
-                // Check if the file exists
-                if (File.Exists(path))
+                string pattern = @":\s*(.*?)\s*<>";
+                Match match = Regex.Match(selectedItem, pattern);
+
+                if (match.Success)
                 {
-                    // Copy the full path (including file name) to the clipboard
-                    Clipboard.SetText(path);
-                    MessageBox.Show("File path copied to clipboard.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else if (Directory.Exists(path))
-                {
-                    // Handle the case where the path itself is a directory
-                    Clipboard.SetText(path);
-                    MessageBox.Show("Directory path copied to clipboard.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("The selected path does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    var path = match.Groups[1].Value.Trim();
+                    // Check if the file exists
+                    if (File.Exists(path))
+                    {
+                        // Copy the full path (including file name) to the clipboard
+                        Clipboard.SetText(path);
+                        MessageBox.Show("File path copied to clipboard.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else if (Directory.Exists(path))
+                    {
+                        // Handle the case where the path itself is a directory
+                        Clipboard.SetText(path);
+                        MessageBox.Show("Directory path copied to clipboard.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("The selected path does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)
@@ -376,6 +406,13 @@ namespace FileWatcher
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Show();
+        }
+
+        private void LogEvent(string action, string filePath)
+        {
+            string logEntry = $"{action}: {filePath} <> {DateTime.Now:yyyy-MM-dd HH:mm}";
+
+            Invoke(new Action(() => listBox1.Items.Add(logEntry))); // update gui
         }
     }
 }
